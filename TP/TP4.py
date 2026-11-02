@@ -2,7 +2,7 @@
 # EXERCICE 1
 # ============================================================
 
-# 1.1 La transposée
+# 1.1
 def transposee(A):
     lignes = len(A)
     colonnes = len(A[0])
@@ -32,7 +32,7 @@ print(transposee([[1, 2, 3], [4, 5, 6]]))
 # EXERCICE 2
 # ============================================================
 
-# 2.1 Produit à la main
+# 2.1
 def produit(A, B):
     n = len(A)
     p = len(A[0])
@@ -58,7 +58,7 @@ identite = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 A = [[1, 2, 2], [1, 3, -2], [3, 5, 8]]
 print("A * identite est égal à A ?", produit(A, identite) == A)
 
-# 2.2 Mesurer le coût cubique
+# 2.2 
 import random
 import time
 
@@ -122,7 +122,7 @@ for n in (40, 80, 120):
 # EXERCICE 3
 # ============================================================
 
-# 3.1 Le rapport de temps
+# 3.1 
 import numpy as np
 
 n = 120
@@ -179,7 +179,7 @@ print("rapport :", round(t_python / max(t_numpy, 1e-9)))
 # EXERCICE 4
 # ============================================================
 
-# 4.1 Élimination et remontée
+# 4.1
 def resoudre(A, b, tolerance=1e-14):
     n = len(A)
     # Création de la matrice augmentée (A et b combinés)
@@ -222,7 +222,7 @@ b_sys = [2, -1, 8]
 resultat_x = resoudre(A_sys, b_sys)
 print("Solution x :", resultat_x)
 
-# 4.2 Confronter à numpy
+# 4.2
 n = 50
 A_grand = matrice_aleatoire(n)
 b_grand = []
@@ -300,7 +300,7 @@ print(ecart < 1e-9)
 # EXERCICE 5
 # ============================================================
 
-# 5.1 Lire le résultat
+# 5.1 
 def hilbert(n):
     matrice = []
     for i in range(n):
@@ -342,7 +342,7 @@ print("conditionnement     : {:.3e}".format(float(np.linalg.cond(H))))
 # EXERCICE 6
 # ============================================================
 
-# 6.1 Composer deux transformations
+# 6.1 
 def rotation(angle):
     c = np.cos(angle)
     s = np.sin(angle)
@@ -383,7 +383,7 @@ print(np.round(droite, 10))
 # EXERCICE 7
 # ============================================================
 
-# 7.1 Déterminant par Gauss
+# 7.1 
 def determinant(A):
     n = len(A)
     M = []
@@ -446,7 +446,7 @@ print(determinant([[1, 2], [2, 4]]))
 # EXERCICE 8
 # ============================================================
 
-# 8.1 Hilbert vaincue avec des fractions
+# 8.1 
 from fractions import Fraction
 
 def hilbert_exacte(n):
@@ -496,7 +496,7 @@ print(all(v == 1 for v in x_exact))
 # EXERCICE 9
 # ============================================================
 
-# 9.1 L'ordre des opérations
+# 9.1
 def translation(tx, ty):
     return np.array([[1.0, 0.0, tx],
                      [0.0, 1.0, ty],
