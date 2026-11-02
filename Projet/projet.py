@@ -208,14 +208,14 @@ if __name__ == "__main__":
     (module_chiffrement_n, exposant_e), (module_chiffrement_n, exposant_d) = generer_cles_ecurie(p_test, q_test)
     
     # Simulation d'une valeur de télémétrie à transmettre de la voiture au stand
-    donnee_telemetrie_ claire = 95  # Ex: 95°C de température d'huile
+    donnee_telemetrie_claire = 95  # Ex: 95°C de température d'huile
     
-    donnee_chiffree = exponentiation_rapide(donnee_telemetrie_ claire, exposant_e, module_chiffrement_n)
+    donnee_chiffree = exponentiation_rapide(donnee_telemetrie_claire, exposant_e, module_chiffrement_n)
     donnee_dechiffree = exponentiation_rapide(donnee_chiffree, exposant_d, module_chiffrement_n)
     
     print("--- TEST UNITAIRE TÉLÉMÉTRIE F1 ---")
-    print("Donnée brute (stand): " + str(donnee_telemetrie_ claire) + " -> Transmise chiffrée: " + str(donnee_chiffree) + " -> Déodée au stand: " + str(donnee_dechiffree))
-    assert donnee_telemetrie_ claire == donnee_dechiffree, "Erreur de transmission radio !"
+    print("Donnée brute (stand): " + str(donnee_telemetrie_claire) + " -> Transmise chiffrée: " + str(donnee_chiffree) + " -> Déodée au stand: " + str(donnee_dechiffree))
+    assert donnee_telemetrie_claire == donnee_dechiffree, "Erreur de transmission radio !"
     
     # Lancement du benchmark global de sécurité
     lancer_simulation_f1()
