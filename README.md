@@ -1,7 +1,7 @@
 # Outils-fondamentaux
 
 **Auteur :** Charles Poichet  
-**Groupe :** S1 C1 (IUT Nord Franche-Comté)  
+**Groupe :** S1 C1
 **Module :** Mathématiques - Calcul numérique et Arithmétique  
 
 ---
