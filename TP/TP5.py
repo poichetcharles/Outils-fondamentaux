@@ -2,7 +2,7 @@
 # EXERCICE 1
 # ============================================================
 
-# 1.1 Les deux conversions
+# 1.1
 def lettre_vers_nombre(c):
     return ord(c) - ord("A")
 
@@ -13,7 +13,20 @@ def nombre_vers_lettre(n):
 print("La lettre C donne :", lettre_vers_nombre("C"))
 print("Le nombre 2 donne :", nombre_vers_lettre(2))
 
-# 1.2 Nettoyer un texte
+# correction
+def lettre_vers_nombre(c):
+    """Numéro de 0 à 25 d'une lettre majuscule."""
+    return ord(c) - ord("A")
+
+def nombre_vers_lettre(n):
+    """Lettre majuscule correspondant à un numéro de 0 à 25."""
+    return chr(n % 26 + ord("A"))
+
+print(lettre_vers_nombre("C"), nombre_vers_lettre(2))
+print([nombre_vers_lettre(lettre_vers_nombre(c)) == c for c in "ABCXYZ"])
+
+
+# 1.2 
 import unicodedata
 
 def nettoyer(texte):
@@ -35,19 +48,6 @@ def nettoyer(texte):
 print("Texte nettoyé :", nettoyer("Été, à Paris !"))
 
 # correction
-def lettre_vers_nombre(c):
-    """Numéro de 0 à 25 d'une lettre majuscule."""
-    return ord(c) - ord("A")
-
-def nombre_vers_lettre(n):
-    """Lettre majuscule correspondant à un numéro de 0 à 25."""
-    return chr(n % 26 + ord("A"))
-
-print(lettre_vers_nombre("C"), nombre_vers_lettre(2))
-print([nombre_vers_lettre(lettre_vers_nombre(c)) == c for c in "ABCXYZ"])
-
-import unicodedata
-
 def nettoyer(texte):
     """Majuscules sans accents, lettres A-Z uniquement."""
     sans_accent = unicodedata.normalize("NFD", texte)
@@ -61,7 +61,7 @@ print(nettoyer("Été, à Paris !"))
 # EXERCICE 2
 # ============================================================
 
-# 2.1 La fonction de chiffrement
+# 2.1
 def chiffrer(texte, a, b):
     texte_propre = nettoyer(texte)
     resultat = ""
@@ -95,7 +95,7 @@ print(chiffrer(message, 1, 3))   # le chiffre de César
 # EXERCICE 3
 # ============================================================
 
-# 3.1 Les clés utilisables
+# 3.1
 def pgcd(a, b):
     while b != 0:
         reste = a % b
@@ -111,7 +111,13 @@ for a in range(1, 26):
 print("Valeurs valides pour a :", valides)
 print("Nombre de valeurs :", len(valides))
 
-# 3.2 L'inverse modulaire
+# correction
+valides = [a for a in range(1, 26) if pgcd(a, 26) == 1]
+print(valides)
+print(len(valides), "valeurs possibles pour a")
+
+
+# 3.2
 def inverse_modulaire(a, n):
     a = a % n
     for candidat in range(1, n):
@@ -129,15 +135,6 @@ except ValueError as erreur:
     print("Erreur attendue :", erreur)
 
 # correction
-def pgcd(a, b):
-    while b != 0:
-        a, b = b, a % b
-    return a
-
-valides = [a for a in range(1, 26) if pgcd(a, 26) == 1]
-print(valides)
-print(len(valides), "valeurs possibles pour a")
-
 def inverse_modulaire(a, n):
     """Inverse de a modulo n, par recherche exhaustive."""
     a = a % n
@@ -159,7 +156,7 @@ except ValueError as erreur:
 # EXERCICE 4
 # ============================================================
 
-# 4.1 La fonction de déchiffrement
+# 4.1
 def dechiffrer(texte, a, b):
     a_inverse = inverse_modulaire(a, 26)
     resultat = ""
@@ -208,7 +205,7 @@ except ValueError as erreur:
 # EXERCICE 5
 # ============================================================
 
-# 5.1 Casser par force brute
+# 5.1 
 def toutes_les_clefs(secret):
     resultats = []
     for a in valides:
@@ -220,7 +217,6 @@ def toutes_les_clefs(secret):
 essais = toutes_les_clefs(secret)
 print("Nombre de clés essayées :", len(essais))
 
-# Recherche du bon message parmi les essais
 for a, b, texte in essais:
     if texte == message:
         print("La bonne clé est : a =", a, ", b =", b)
@@ -244,7 +240,7 @@ print("la bonne clef :", bons[0][0], bons[0][1])
 # EXERCICE 6
 # ============================================================
 
-# 6.1 Casser par analyse de fréquences
+# 6.1 
 texte_long = nettoyer(
     "Le chiffrement affine est un chiffrement par substitution monoalphabetique. "
     "Chaque lettre du message est remplacee par une autre lettre, toujours la meme, "
@@ -253,7 +249,6 @@ texte_long = nettoyer(
 )
 secret_long = chiffrer(texte_long, 7, 12)
 
-# Comptage manuel (niveau NSI)
 frequences = {}
 for lettre in secret_long:
     if lettre in frequences:
@@ -261,7 +256,6 @@ for lettre in secret_long:
     else:
         frequences[lettre] = 1
 
-# Recherche de la lettre qui apparaît le plus
 lettre_frequente = ""
 max_occurences = 0
 for lettre in frequences:
@@ -275,14 +269,11 @@ cible = lettre_vers_nombre(lettre_frequente)
 candidats = []
 
 for a in valides:
-    # Si E (valeur 4) donne 'cible', alors : cible = 4 * a + b
-    # Donc b = cible - 4 * a
     b = (cible - 4 * a) % 26
     candidats.append((a, b, dechiffrer(secret_long, a, b)))
 
 print("Nombre de candidats :", len(candidats))
 for a, b, texte in candidats:
-    # On regarde si ça commence par LECHIFFREMENT
     if texte[0:13] == "LECHIFFREMENT":
         print("Trouvé ! Clé : a =", a, ", b =", b)
         print("Début du texte :", texte[0:60])
@@ -311,7 +302,7 @@ for a, b, texte in candidats:
 # EXERCICE 7
 # ============================================================
 
-# 7.1 L'indice de coïncidence
+# 7.1 
 import random
 
 def indice_coincidence(texte):
@@ -343,8 +334,6 @@ print("IC du chiffre affine :", round(indice_coincidence(secret_long), 4))
 print("IC du texte au hasard :", round(indice_coincidence(hasard), 4))
 
 # correction
-import random
-
 def indice_coincidence(texte):
     """Probabilité que deux lettres tirées au hasard dans le texte coïncident."""
     N = len(texte)
@@ -364,7 +353,7 @@ print(f"hasard   : {indice_coincidence(hasard):.4f}")
 # EXERCICE 8
 # ============================================================
 
-# 8.1 Chiffrer par Vigenère
+# 8.1
 def vigenere(texte, cle):
     texte_propre = nettoyer(texte)
     cle_propre = nettoyer(cle)
@@ -373,7 +362,6 @@ def vigenere(texte, cle):
     
     for i in range(len(texte_propre)):
         c = texte_propre[i]
-        # On répète la clé grâce au modulo
         lettre_cle = cle_propre[i % longueur_cle]
         
         decalage = lettre_vers_nombre(lettre_cle)
@@ -401,13 +389,12 @@ secret_vigenere = vigenere(texte_long, "CLE")
 print(secret_vigenere[:40])
 print(f"IC vigenere : {indice_coincidence(secret_vigenere):.4f}")
 
-# 8.2 Retrouver la longueur de la clé
+
+# 8.2 
 for L in range(1, 8):
     somme_ic = 0
-    # On découpe le texte en L colonnes
     for i in range(L):
         colonne = ""
-        # On prend une lettre sur L
         for j in range(i, len(secret_vigenere), L):
             colonne = colonne + secret_vigenere[j]
         somme_ic = somme_ic + indice_coincidence(colonne)
