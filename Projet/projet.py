@@ -1,221 +1,268 @@
+
 import time
 import random
 import matplotlib.pyplot as plt
 
-# ============================================================
-# TÉLÉMÉTRIE F1 & CRYPTOGRAPHIE RSA (SÉCURITÉ DES STANDS)
-# ============================================================
-
-def euclide_etendu(coefficient_a, coefficient_b):
-    """Calcule le PGCD de a et b, ainsi que les coefficients de Bezout (u, v)."""
-    if coefficient_a == 0:
-        return coefficient_b, 0, 1
-        
-    pgcd, coefficient_u1, coefficient_v1 = euclide_etendu(coefficient_b % coefficient_a, coefficient_a)
-    coefficient_u = coefficient_v1 - (coefficient_b // coefficient_a) * coefficient_u1
-    coefficient_v = coefficient_u1
-    
-    return pgcd, coefficient_u, coefficient_v
-
-def inverse_modulaire(exposant_e, indicatrice_phi):
-    """Calcule l'inverse de e modulo phi pour générer la clé privée de l'écurie."""
-    pgcd, coefficient_u, coefficient_v = euclide_etendu(exposant_e, indicatrice_phi)
-    
-    if pgcd != 1:
-        raise ValueError("L'inverse modulaire n'existe pas (e et phi non premiers entre eux).")
-        
-    return coefficient_u % indicatrice_phi
-
-def exponentiation_rapide(base, exposant, modulo):
-    """Calcule (base^exposant) % modulo très rapidement en O(log(exposant))."""
-    resultat = 1
-    base_courante = base % modulo
-    exposant_restant = exposant
-    
-    while exposant_restant > 0:
-        if exposant_restant % 2 == 1:
-            resultat = (resultat * base_courante) % modulo
-        exposant_restant = exposant_restant // 2
-        base_courante = (base_courante * base_courante) % modulo
-        
-    return resultat
-
-def generer_cles_ecurie(premier_p, premier_q):
-    """Construit la clé publique de la monoplace (n, e) et la clé privée du stand (n, d)."""
-    module_chiffrement_n = premier_p * premier_q
-    indicatrice_phi = (premier_p - 1) * (premier_q - 1)
-    
-    # Recherche d'un exposant public e premier avec phi
-    exposant_e = 3
-    while euclide_etendu(exposant_e, indicatrice_phi)[0] != 1:
-        exposant_e += 2
-        
-    exposant_d = inverse_modulaire(exposant_e, indicatrice_phi)
-    
-    return (module_chiffrement_n, exposant_e), (module_chiffrement_n, exposant_d)
 
 # ============================================================
-# GÉNÉRATION DE NOMBRES PREMIERS
+# FONCTIONS RSA
 # ============================================================
 
-def est_premier(nombre):
-    """Test de primalité basique (déterministe)."""
-    if nombre < 2:
-        return False
-    if nombre == 2:
-        return True
-    if nombre % 2 == 0:
-        return False
-        
-    diviseur = 3
-    while diviseur * diviseur <= nombre:
-        if nombre % diviseur == 0:
-            return False
-        diviseur += 2
-        
+def est_premier(n):
+    liste_diviseurs=[1]
+    for i in range(2,n+1):
+        if n%i==0: liste_diviseurs.append(i)
+        if len(liste_diviseurs)>2: return False
     return True
 
-def generer_premier(taille_en_bits):
-    """Génère un nombre premier aléatoire de la taille demandée en bits."""
-    borne_minimale = 2 ** (taille_en_bits - 1)
-    borne_maximale = (2 ** taille_en_bits) - 1
-    
+
+def diviseurs_premiers(n):
+    liste_diviseurs_premiers=[]
+    for i in range(2,n+1):
+        if n%i==0 and est_premier(i):
+            liste_diviseurs_premiers.append(i)
+    return liste_diviseurs_premiers
+
+
+def recherche_pq(n):
+    L=diviseurs_premiers(n)
+    for nombre1 in L:
+        for nombre2 in L:
+            if nombre1*nombre2==n :
+                return (nombre1,nombre2)
+    return -1
+
+
+def recherche_d(c,p,q):
+    d=1
+    while (c*d)%((p-1)*(q-1))!=1:
+        d+=1
+    return d
+
+
+# ============================================================
+# 2. FONCTIONS COMPLEMENTAIRES
+# ============================================================
+
+def pgcd(a, b):
+    """Calcule le PGCD de deux nombres."""
+    while b != 0:
+        a, b = b, a % b
+    return a
+
+
+def exponentiation_rapide(base, exposant, modulo):
+    """Calcule rapidement base puissance exposant modulo modulo."""
+    resultat = 1
+    base = base % modulo
+
+    while exposant > 0:
+        if exposant % 2 == 1:
+            resultat = (resultat * base) % modulo
+
+        exposant = exposant // 2
+        base = (base * base) % modulo
+
+    return resultat
+
+
+def generer_premier(taille_bits):
+    """Génère un nombre premier de la taille demandée."""
+    minimum = 2 ** (taille_bits - 1)
+    maximum = 2 ** taille_bits - 1
+
     while True:
-        candidat = random.randint(borne_minimale, borne_maximale)
-        if est_premier(candidat):
-            return candidat
+        nombre = random.randint(minimum, maximum)
+
+        if est_premier(nombre):
+            return nombre
+
 
 # ============================================================
-# ATTAQUE PAR ESPIONNAGE INDUSTRIEL (FORCE BRUTE)
+# 3. GENERATION DES CLES RSA
 # ============================================================
 
-def attaque_espionnage_telemetrie(module_chiffrement_n, duree_maximale):
-    """
-    Tente d'intercepter et de casser le module 'n' par force brute 
-    pour décoder les données de la monoplace avant la fin du temps imparti.
-    """
-    temps_debut = time.time()
-    nombre_tests = 0
+def generer_cles(taille_bits):
 
-    if module_chiffrement_n % 2 == 0:
-        return 2, module_chiffrement_n // 2, time.time() - temps_debut, 1, False
+    p = generer_premier(taille_bits)
+    q = generer_premier(taille_bits)
 
-    diviseur = 3
-    limite_recherche = int(module_chiffrement_n ** 0.5) + 1
+    while q == p:
+        q = generer_premier(taille_bits)
 
-    while diviseur < limite_recherche:
-        nombre_tests += 1
-        
-        # Vérification du timeout toutes les 1000 itérations pour éviter le crash du stand
-        if nombre_tests % 1000 == 0:
-            temps_ecoule = time.time() - temps_debut
-            if temps_ecoule >= duree_maximale:
-                return None, None, temps_ecoule, nombre_tests, True
+    n = p * q
+    phi = (p - 1) * (q - 1)
 
-        if module_chiffrement_n % diviseur == 0:
-            temps_ecoule = time.time() - temps_debut
-            return diviseur, module_chiffrement_n // diviseur, temps_ecoule, nombre_tests, False
+    # Recherche d'un exposant public valide
+    e = 3
 
-        diviseur += 2
+    while pgcd(e, phi) != 1:
+        e += 2
 
-    temps_ecoule = time.time() - temps_debut
-    
-    return None, None, temps_ecoule, nombre_tests, False
+    # Calcul de la clé privée
+    d = recherche_d(e, p, q)
+
+    return p, q, n, e, d
+
 
 # ============================================================
-# EXPÉRIMENTATION ET VISUALISATION DES PERFORMANCES
+# CHIFFREMENT ET DECHIFFREMENT
 # ============================================================
 
-def afficher_graphique_securite(liste_resultats):
-    """Trace la courbe de vulnérabilité de la télémétrie F1 en fonction de la taille de clé."""
+def chiffrer(message, e, n):
+    return exponentiation_rapide(message, e, n)
+
+
+def dechiffrer(chiffre, d, n):
+    return exponentiation_rapide(chiffre, d, n)
+
+
+# ============================================================
+# 5. SIMULATION DE LA TELEMETRIE F1
+# ============================================================
+
+def simulation_f1():
+
+    print("\n==========================================")
+    print("      TELEMETRIE FORMULE 1 - RSA")
+    print("==========================================")
+
+    # Exemple de donnée envoyée par la voiture
+    vitesse = 327
+
+    # Création d'une petite clé RSA
+    p, q, n, e, d = generer_cles(9)
+
+    print("\n--- GENERATION DES CLES ---")
+    print("Nombre premier p :", p)
+    print("Nombre premier q :", q)
+    print("Module n :", n)
+    print("Cle publique :", (e, n))
+    print("Cle privee :", (d, n))
+
+    if vitesse >= n:
+        print("Erreur : la valeur de télémétrie dépasse le module RSA.")
+        return
+
+    # Chiffrement de la vitesse
+    message_chiffre = chiffrer(vitesse, e, n)
+
+    # Déchiffrement à la réception
+    message_dechiffre = dechiffrer(message_chiffre, d, n)
+
+    print("\n--- TRANSMISSION DES DONNEES ---")
+    print("Vitesse originale :", vitesse, "km/h")
+    print("Donnee chiffree :", message_chiffre)
+    print("Donnee dechiffree :", message_dechiffre, "km/h")
+
+    if message_dechiffre == vitesse:
+        print("Transmission securisee : dechiffrement reussi.")
+
+
+# ============================================================
+# RSA
+# ============================================================
+
+def attaque_rsa(n, e):
+
+    debut = time.perf_counter()
+
+    # Recherche des deux facteurs premiers
+    resultats = recherche_pq(n)
+
+    if resultats == -1:
+        return None, None, time.perf_counter() - debut
+
+    p_trouve, q_trouve = resultats
+
+    # Reconstruction de la clé privée
+    d_trouve = recherche_d(e, p_trouve, q_trouve)
+
+    temps = time.perf_counter() - debut
+
+    return p_trouve, q_trouve, temps
+
+
+# ============================================================
+# ETUDE DES TAILLES DE CLES
+# ============================================================
+
+def etude_securite():
+
+    # Taille en bits de chacun des deux nombres premiers
+    tailles = [8, 9, 10, 11]
+
     tailles_cles = []
-    temps_moyens = []
+    temps_attaques = []
 
-    for resultat in liste_resultats:
-        if resultat["temps_moyen"] is not None:
-            tailles_cles.append(resultat["taille_cle"])
-            temps_moyens.append(resultat["temps_moyen"])
+    print("\n==========================================")
+    print("       ETUDE DE LA SECURITE RSA")
+    print("==========================================")
 
-    plt.figure(figsize=(9, 5))
-    plt.plot(tailles_cles, temps_moyens, marker="s", color="darkred", linestyle="-", linewidth=2)
-    plt.title("Vulnérabilité de la télémétrie F1 face à l'espionnage (Temps de cassage)")
-    plt.xlabel("Taille de la clé publique de la monoplace (n) en bits")
-    plt.ylabel("Temps moyen d'interception (secondes)")
-    plt.yscale("log")  # Échelle logarithmique pour montrer l'explosion exponentielle
-    plt.grid(True)
+    for bits in tailles:
+
+        # Génération des clés
+        p, q, n, e, d = generer_cles(bits)
+
+        taille_reelle = n.bit_length()
+
+        # Mesure de l'attaque
+        p_trouve, q_trouve, temps = attaque_rsa(n, e)
+
+        tailles_cles.append(taille_reelle)
+        temps_attaques.append(temps)
+
+        # Vérification de la clé retrouvée
+        succes = False
+
+        if p_trouve is not None:
+            d_trouve = recherche_d(e, p_trouve, q_trouve)
+
+            message_test = 327 % n
+            chiffre = chiffrer(message_test, e, n)
+            resultat = dechiffrer(chiffre, d_trouve, n)
+
+            succes = resultat == message_test
+
+        print("\nTaille des nombres premiers :", bits, "bits")
+        print("Taille de la clé publique :", taille_reelle, "bits")
+        print("Temps de factorisation :", round(temps, 6), "secondes")
+        print("Clé privée retrouvée :", "Oui" if succes else "Non")
+
+    # ========================================================
+    # GRAPHIQUE
+    # ========================================================
+
+    plt.figure(figsize=(10, 6))
+
+    plt.plot(
+        tailles_cles,
+        temps_attaques,
+        marker="o",
+        linewidth=2,
+        label="Temps de cassage par factorisation"
+    )
+
+    plt.title("Formule 1 : résistance du chiffrement RSA")
+    plt.xlabel("Taille du module RSA (bits)")
+    plt.ylabel("Temps de cassage (secondes)")
+
+    plt.grid(True, linestyle="--", alpha=0.6)
+    plt.legend()
+    plt.tight_layout()
+
+    plt.savefig("resultats_rsa_f1.png", dpi=150)
     plt.show()
 
-def lancer_simulation_f1():
-    """
-    Simule l'interception de clés de chiffrement F1 de plus en plus robustes
-    par une écurie concurrente.
-    """
-    tailles_premiers_bits = [8, 10, 12, 14, 16, 18, 20, 22, 24]
-    nombre_essais_par_taille = 3
-    duree_maximale_attaque = 3.0  # Limite de temps d'analyse par l'adversaire
-    
-    resultats_global = []
-    print("\n--- SIMULATION PADDOCK F1 : SÉCURISATION DES DONNÉES DE LA MONOPLACE ---")
-
-    for bits in tailles_premiers_bits:
-        temps_reussites = []
-        taille_cle = 0
-        print("\n[ Clé générée avec des nombres premiers de " + str(bits) + " bits ]")
-
-        for numero_essai in range(1, nombre_essais_par_taille + 1):
-            nombre_p = generer_premier(bits)
-            nombre_q = generer_premier(bits)
-            while nombre_q == nombre_p:
-                nombre_q = generer_premier(bits)
-
-            module_chiffrement_n = nombre_p * nombre_q
-            taille_cle = module_chiffrement_n.bit_length()
-
-            # Lancement de l'attaque par l'écurie rivale
-            facteur_p, facteur_q, temps_mesure, tests_effectues, limite_atteinte = attaque_espionnage_telemetrie(module_chiffrement_n, duree_maximale_attaque)
-
-            if facteur_p is not None:
-                temps_reussites.append(temps_mesure)
-                print("  Essai " + str(numero_essai) + " : Interception RÉUSSIE en " + str(round(temps_mesure, 4)) + "s (" + str(tests_effectues) + " calculs)")
-            else:
-                if limite_atteinte:
-                    print("  Essai " + str(numero_essai) + " : Échec de l'espionnage (Temps limite de " + str(round(temps_mesure, 2)) + "s dépassé, donnee sécurisée)")
-                else:
-                    print("  Essai " + str(numero_essai) + " : ÉCHEC total")
-
-        # Calcul et affichage de la moyenne pour cette taille de clé
-        if temps_reussites:
-            temps_moyen = sum(temps_reussites) / len(temps_reussites)
-            print("Temps MOYEN d'interception pour les clés de " + str(taille_cle) + " bits : " + str(round(temps_moyen, 4)) + " secondes")
-        else:
-            temps_moyen = None
-            print("SÉCURITÉ TOTALE pour les clés de " + str(taille_cle) + " bits (インviolables dans le temps imparti)")
-        
-        resultats_global.append({
-            "taille_cle": taille_cle,
-            "temps_moyen": temps_moyen
-        })
-
-    afficher_graphique_securite(resultats_global)
 
 # ============================================================
-# DÉMARRAGE DU SCRIPT
+# Appel de fonction
 # ============================================================
 
 if __name__ == "__main__":
-    # Test unitaire : Chiffrement d'une donnée de télémétrie (ex: température moteur en °C)
-    p_test, q_test = 61, 53
-    (module_chiffrement_n, exposant_e), (module_chiffrement_n, exposant_d) = generer_cles_ecurie(p_test, q_test)
-    
-    # Simulation d'une valeur de télémétrie à transmettre de la voiture au stand
-    donnee_telemetrie_claire = 95  # Ex: 95°C de température d'huile
-    
-    donnee_chiffree = exponentiation_rapide(donnee_telemetrie_claire, exposant_e, module_chiffrement_n)
-    donnee_dechiffree = exponentiation_rapide(donnee_chiffree, exposant_d, module_chiffrement_n)
-    
-    print("--- TEST UNITAIRE TÉLÉMÉTRIE F1 ---")
-    print("Donnée brute (stand): " + str(donnee_telemetrie_claire) + " -> Transmise chiffrée: " + str(donnee_chiffree) + " -> Déodée au stand: " + str(donnee_dechiffree))
-    assert donnee_telemetrie_claire == donnee_dechiffree, "Erreur de transmission radio !"
-    
-    # Lancement du benchmark global de sécurité
-    lancer_simulation_f1()
+
+    simulation_f1()
+
+    etude_securite()
+
+
