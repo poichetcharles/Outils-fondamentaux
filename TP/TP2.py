@@ -2,7 +2,7 @@
 # EXERCICE 1
 # ============================================================
 
-# 1.1
+# 1.1 
 def diviseurs(n):
     resultat = []
     for d in range(1, n + 1):
@@ -25,14 +25,14 @@ def diviseurs(n):
 print(diviseurs(28))
 print(diviseurs(97))
 
+
 # ============================================================
-# EXERCICE 2
+# EXERCICE 2 
 # ============================================================
 
-# 2.1
+# 2.1 
 def pgcd_naif(a, b):
     meilleur = 1
-    # On teste tous les nombres jusqu'au plus petit des deux
     plus_petit = a
     if b < a:
         plus_petit = b
@@ -69,8 +69,9 @@ def pgcd(a, b):
 
 print(pgcd_naif(1071, 462), pgcd(1071, 462))
 
+
 # ============================================================
-# EXERCICE 3
+# EXERCICE 3 
 # ============================================================
 
 # 3.1
@@ -150,7 +151,7 @@ for n in (10_007, 100_003, 1_000_003):
 # EXERCICE 4
 # ============================================================
 
-# 4.1
+# 4.1 
 def crible(limite):
     est_premier_tab = [True] * (limite + 1)
     est_premier_tab[0] = False
@@ -215,7 +216,7 @@ print(f"crible {t_crible:.4f} s | un par un {t_un_par_un:.4f} s")
 # EXERCICE 5
 # ============================================================
 
-# 5.1
+# 5.1 
 def facteurs(n):
     resultat = []
     d = 2
@@ -264,7 +265,7 @@ print(produit)
 # EXERCICE 6
 # ============================================================
 
-# 6.1 et 6.2
+# 6.1 
 def fibonacci_recursif(n):
     if n < 2:
         return n
@@ -289,7 +290,7 @@ resultat = fibonacci_compte(30)
 print("F(30) =", resultat)
 print("Appels à F(1) :", appels[1])
 
-# 6.3
+# 6.2
 def fibonacci(n):
     precedent = 0
     courant = 1
@@ -302,7 +303,6 @@ def fibonacci(n):
 print("Temps pour F(30) optimisé :", round(duree(fibonacci, 30), 6), "s")
 grand = fibonacci(10000)
 print("Chiffres de F(10000) :", len(str(grand)))
-
 
 # correction
 def fibonacci_recursif(n):
@@ -344,7 +344,7 @@ print(len(str(grand)), "chiffres")
 # EXERCICE 7
 # ============================================================
 
-# 7.1
+# 7.1 
 def euclide_etendu(a, b):
     if b == 0:
         return a, 1, 0
@@ -358,7 +358,6 @@ g, u, v = euclide_etendu(1071, 462)
 print("PGCD :", g, "| u :", u, "| v :", v)
 print("Vérification :", 1071 * u + 462 * v == g)
 
-# 7.2
 def puissance_mod_naive(a, e, n):
     resultat = 1
     for i in range(e):
@@ -374,16 +373,6 @@ def puissance_mod(a, e, n):
         a = (a * a) % n
         e = e // 2
     return resultat
-
-a = 7
-e = 10 ** 7
-n = 1000003
-
-# t_naive = duree(puissance_mod_naive, a)
-# t_rapide = duree(puissance_mod, a)
-
-# print("Temps version naïve :", round(t_naive, 3), "s")
-# print("Temps version rapide :", round(t_rapide, 6), "s")
 
 # correction
 def euclide_etendu(a, b):
