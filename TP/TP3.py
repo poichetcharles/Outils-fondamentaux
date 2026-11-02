@@ -2,15 +2,15 @@
 # EXERCICE 1
 # ============================================================
 
-# 1.1 Évaluation d'un polynôme
 def evaluer_naif(P, x):
+    """Évalue le polynôme P au point x, terme par terme."""
     total = 0
     for i in range(len(P)):
         total = total + P[i] * (x ** i)
     return total
 
 print("Test naïf en x=2 :", evaluer_naif([2, 3, 0, 5], 2))
-print("Test naïf en x=0 (coefficient constant) :", evaluer_naif([2, 3, 0, 5], 0))
+print("Test naïf en x=25 :", evaluer_naif([2, 5, 7], 25))
 
 # correction
 def evaluer_naif(P, x):
@@ -23,12 +23,14 @@ def evaluer_naif(P, x):
 print(evaluer_naif([2, 3, 0, 5], 2))
 print(evaluer_naif([2, 3, 0, 5], 0))
 
+
 # ============================================================
 # EXERCICE 2
 # ============================================================
 
-# 2.1 Schéma de Horner
+# 2.1
 def evaluer(P, x):
+    """Évalue le polynôme P au point x par le schéma de Horner."""
     total = 0
     for coefficient in reversed(P):
         total = total * x + coefficient
@@ -50,7 +52,8 @@ P = [2, 3, 0, 5]
 for x in (-2, 0, 1, 2, 10):
     print(x, evaluer_naif(P, x), evaluer(P, x))
 
-# 2.2 Mesure avec des flottants (x = 1.0001)
+
+# 2.2
 import time
 
 for degre in (1000, 5000, 20000):
@@ -85,7 +88,8 @@ for degre in (1000, 5000, 20000):
     print(f"degre {degre:>6} : naif {t_naif:.5f} s | horner {t_horner:.5f} s "
           f"| rapport {t_naif / t_horner:.1f} | ecart des valeurs {abs(a - b):.2e}")
 
-# 2.3 Mesure avec des entiers (x = 3)
+
+# 2.3
 for degre in (200, 400, 800):
     P = [1] * (degre + 1)
     
@@ -114,12 +118,13 @@ for degre in (200, 400, 800):
 
     print(f"degre {degre:>4} : rapport {t_naif / t_horner:.1f} | resultats egaux : {a == b}")
 
+
 # ============================================================
 # EXERCICE 3
 # ============================================================
 
-# 3.1 Dérivation de polynôme
 def deriver(P):
+    """Coefficients du polynôme dérivé de P."""
     derivee = []
     for i in range(1, len(P)):
         derivee.append(i * P[i])
@@ -141,13 +146,17 @@ print(deriver([7]))
 # EXERCICE 4
 # ============================================================
 
-# 4.1 Dichotomie
+# 4.1
+
 def dichotomie(f, a, b, tolerance=1e-12):
+    """Racine de f dans [a, b], par bissection."""
     fa = f(a)
     fb = f(b)
     
-    if fa == 0: return a
-    if fb == 0: return b
+    if fa == 0: 
+        return a
+    if fb == 0: 
+        return b
     if fa * fb > 0:
         print("Erreur : f(a) et f(b) doivent être de signes opposés.")
         return None
@@ -163,7 +172,7 @@ def dichotomie(f, a, b, tolerance=1e-12):
 def carre_moins_deux(x):
     return x * x - 2
 
-racine = dichotomie(carre_moins_deux, 0, 2)
+racine = dichotomie(carre_moins_deux, 0, 2, 1e-9)
 print("Racine de x^2 - 2 (Dichotomie) :", racine)
 
 # correction
@@ -192,7 +201,7 @@ print(racine)
 print(abs(racine - 2 ** 0.5) < 1e-9)
 
 
-# 4.2 Méthode de Newton
+# 4.2
 def newton(P, depart, tolerance=1e-12, tours_max=100):
     derivee = deriver(P)
     x = float(depart)
@@ -206,8 +215,8 @@ def newton(P, depart, tolerance=1e-12, tours_max=100):
             return None, tour
             
         suivant = x - (valeur / pente)
-        
         ecart = abs(suivant - x)
+        
         if ecart <= tolerance * max(1.0, abs(suivant)):
             return suivant, tour + 1
             
@@ -241,7 +250,8 @@ racine, tours = newton(Q, 2)
 print(racine, "en", tours, "tours")
 print(abs(evaluer(Q, racine)) < 1e-10)
 
-# 4.3 Piège de Newton (boucle infinie sans plafond)
+
+# 4.3
 def newton_trace(P, depart, tours):
     derivee = deriver(P)
     x = float(depart)
@@ -249,7 +259,8 @@ def newton_trace(P, depart, tours):
     
     for i in range(tours):
         pente = evaluer(derivee, x)
-        if pente == 0: break
+        if pente == 0: 
+            break
         x = x - (evaluer(P, x) / pente)
         trajet.append(x)
         
@@ -280,7 +291,8 @@ try:
 except RuntimeError as erreur:
     print("echec :", erreur)
 
-# 4.4 L'importance du point de départ
+
+# 4.4
 print("\nTest des départs pour x^3 - 2x - 5 :")
 for depart in (2, 1, 0):
     rac, nb_tours = newton(Q, depart)
@@ -297,16 +309,11 @@ for depart in (2, 1, 0):
 # EXERCICE 5
 # ============================================================
 
-# 5.1 Graphique avec Matplotlib
 import matplotlib.pyplot as plt
 
 Q = [-5, -2, 0, 1]
-xs = []
-ys = []
-for i in range(-300, 301):
-    x_val = i / 100
-    xs.append(x_val)
-    ys.append(evaluer(Q, x_val))
+xs = [i / 100 for i in range(-300, 301)]
+ys = [evaluer(Q, x) for x in xs]
 
 plt.figure()
 plt.plot(xs, ys, label="x^3 - 2x - 5")
@@ -317,17 +324,17 @@ plt.xlabel("x")
 plt.ylabel("P(x)")
 plt.legend()
 plt.title("Un polynome et son unique racine reelle")
-plt.show()
+# plt.show()
 
 
 # ============================================================
 # EXERCICE 6
 # ============================================================
 
-# 6.1 Somme et produit de polynômes
+# 6.1
+
 def somme(P, Q):
     longueur = max(len(P), len(Q))
-    # On ajoute des zéros pour que les deux listes aient la même taille
     P_complet = P + [0] * (longueur - len(P))
     Q_complet = Q + [0] * (longueur - len(Q))
     
@@ -340,11 +347,11 @@ def produit_poly(P, Q):
     if len(P) == 0 or len(Q) == 0:
         return []
         
-    R = [0] * (len(P) + len(Q) - 1)
+    res = [0] * (len(P) + len(Q) - 1)
     for i in range(len(P)):
         for j in range(len(Q)):
-            R[i + j] = R[i + j] + P[i] * Q[j]
-    return R
+            res[i + j] = res[i + j] + P[i] * Q[j]
+    return res
 
 print("\nSomme [1, 2] et [0, 0, 3] :", somme([1, 2], [0, 0, 3]))
 print("Produit [1, 1] et [1, 1] :", produit_poly([1, 1], [1, 1]))
@@ -372,12 +379,13 @@ print(somme([1, 2], [0, 0, 3]))
 print(produit_poly([1, 1], [1, 1]))
 print(produit_poly([-1, 1], [1, 1]))
 
-# 6.2 Le triangle de Pascal
-binome = [1]
+
+# 6.2 
+l = [1]
 for i in range(10):
-    binome = produit_poly(binome, [1, 1])
-print("Ligne 10 de Pascal :", binome)
-print("Somme de la liste :", sum(binome), "| Attendu :", 2 ** 10)
+    l = produit_poly(l, [1, 1])
+print("Ligne 10 de Pascal :", l)
+print("Somme de la liste :", sum(l), "| Attendu :", 2 ** 10)
 
 # correction
 binome = [1]
@@ -391,7 +399,6 @@ print(sum(binome), 2 ** 10)
 # EXERCICE 7
 # ============================================================
 
-# 7.1 Dérivée numérique
 import math
 
 def derivee_avant(f, x, h):
@@ -405,7 +412,7 @@ print("\nErreur de dérivée pour sin(1.0) :")
 for h in (1e-1, 1e-2, 1e-4, 1e-6, 1e-8, 1e-10, 1e-12):
     e_avant = abs(derivee_avant(math.sin, 1.0, h) - exacte)
     e_centree = abs(derivee_centree(math.sin, 1.0, h) - exacte)
-    print("h =", h, "| Avant :", e_avant, "| Centrée :", e_centree)
+    print(f"h = {h:.0e} : avant {e_avant:.1e} | centrée {e_centree:.1e}")
 
 # correction
 import math
@@ -427,7 +434,8 @@ for h in (1e-1, 1e-2, 1e-4, 1e-6, 1e-8, 1e-10, 1e-12):
 # EXERCICE 8
 # ============================================================
 
-# 8.1 Intégration (Rectangles, Trapèzes, Simpson)
+# 8.1
+
 def rectangles(f, a, b, n):
     h = (b - a) / n
     total = 0
@@ -465,7 +473,7 @@ for n in (10, 100, 1000):
     e_rect = abs(rectangles(carre, 0, 1, n) - (1 / 3))
     e_trap = abs(trapezes(carre, 0, 1, n) - (1 / 3))
     e_simp = abs(simpson(carre, 0, 1, n) - (1 / 3))
-    print("n =", n, "| Rectangles :", e_rect, "| Trapèzes :", e_trap, "| Simpson :", e_simp)
+    print(f"n = {n:>4} : rectangles {e_rect:.1e} | trapezes {e_trap:.1e} | simpson {e_simp:.1e}")
 
 # correction
 def rectangles(f, a, b, n):
@@ -497,7 +505,8 @@ for n in (10, 100, 1000):
     e_simp = abs(simpson(carre, 0, 1, n) - 1 / 3)
     print(f"n = {n:>4} : rectangles {e_rect:.1e} | trapezes {e_trap:.1e} | simpson {e_simp:.1e}")
 
-# 8.2 Calculer pi
+
+# 8.2
 def arctangente_derivee(x):
     return 4 / (1 + x * x)
 
