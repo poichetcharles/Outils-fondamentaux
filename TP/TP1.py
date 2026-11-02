@@ -2,7 +2,7 @@
 # EXERCICE 1
 # ============================================================
 
-# 1.1
+# 1.1 
 n = 2026
 d = 7
 quotient = n // d
@@ -20,6 +20,7 @@ reste = n % d
 print(quotient, reste)
 print(quotient * d + reste == n)
 
+
 # 1.2
 nombre = 123456789
 unites = nombre % 10
@@ -33,11 +34,12 @@ n = 123456789
 print(n % 10)
 print(n // 10)
 
+
 # ============================================================
 # EXERCICE 2
 # ============================================================
 
-# 2.1 L'erreur de la machine
+# 2.1 
 total = 0.0
 for i in range(1000):
     total = total + 0.1
@@ -52,7 +54,8 @@ for _ in range(1000):
 print(total)
 print(total - 100)
 
-# 2.2 Comparer deux flottants
+
+# 2.2 
 def presque_egaux(a, b, tolerance=1e-9):
     ecart = abs(a - b)
     if ecart <= tolerance:
@@ -68,25 +71,12 @@ def presque_egaux(a, b, tolerance=1e-9):
 print(presque_egaux(0.1 + 0.2, 0.3))
 print(presque_egaux(1.0, 1.5))
 
+
 # ============================================================
-# EXERCICE 3
+# EXERCICE 3 
 # ============================================================
-n = 17
 
-if n % 2 == 0:
-    print("pair")
-else:
-    print("impair")
-
-for i in range(1, 6):
-    print(i, i * i)
-    
-n = 1
-while n * n < 1000:
-    n = n + 1
-print(n)
-
-# 3.1
+# 3.1 
 for i in range(1, 11):
     print("7 x", i, "=", 7 * i)
 
@@ -97,7 +87,8 @@ for i in range(1, 11):
 for i in range(1, 11):
     print(f"7 x {i} = {7 * i}")
 
-# 3.2 
+
+# 3.2
 n = 100
 total_boucle = 0
 for i in range(1, n + 1):
@@ -106,13 +97,13 @@ for i in range(1, n + 1):
 print("Somme avec la boucle :", total_boucle)
 
 # correction
-
 n = 100
 total = 0
 for i in range(1, n + 1):
     total = total + i
 print(total)
 print(n * (n + 1) // 2)
+
 
 # ============================================================
 # EXERCICE 4
@@ -125,7 +116,9 @@ def celsius_vers_fahrenheit(c):
 print(celsius_vers_fahrenheit(100))
 print(celsius_vers_fahrenheit(-40))
 
+
 def nombre_de_chiffres(n):
+    """Calcule le nombre de chiffres d'un entier positif par divisions successives."""
     compte = 1
     while n >= 10:
         n = n // 10
@@ -135,7 +128,6 @@ def nombre_de_chiffres(n):
 print("Chiffres de 2026 :", nombre_de_chiffres(2026))
 
 # correction
-
 def nombre_de_chiffres(n):
     """Renvoie le nombre de chiffres de l'entier positif n."""
     compte = 1
@@ -148,8 +140,9 @@ print(nombre_de_chiffres(2026))
 print(nombre_de_chiffres(7))
 print(nombre_de_chiffres(10 ** 60))
 
+
 # ============================================================
-# EXERCICE 5
+# EXERCICE 5 
 # ============================================================
 
 def heron(a):
@@ -174,7 +167,6 @@ def heron(a):
 print("Racine de 2 avec Héron :", heron(2))
 
 # correction
-
 import math
 
 def heron(a, tolerance=1e-12):
@@ -196,18 +188,12 @@ print(heron(2))
 print(math.sqrt(2))
 print(abs(heron(2) - math.sqrt(2)) < 1e-12)
 
+
 # ============================================================
-# EXERCICE 6
-# ============================================================
+# EXERCICE 6 
+# =================================2===========================
 
-print(bin(37))
-print(int("100101", 2))
-
-from fractions import Fraction
-
-print(Fraction(0.1))
-
-# 6.1
+# 6.1 
 def vers_binaire(n):
     if n == 0:
         return "0"
@@ -234,6 +220,7 @@ def vers_binaire(n):
 print(vers_binaire(37), vers_binaire(0), vers_binaire(1024))
 print(all(vers_binaire(n) == bin(n)[2:] for n in range(2000)))
 
+
 # 6.2
 eps = 1.0
 while 1.0 + eps / 2 != 1.0:
@@ -252,8 +239,9 @@ print(eps)
 print(sys.float_info.epsilon)
 print(eps == 2 ** -52)
 
+
 # ============================================================
-# EXERCICE 7
+# EXERCICE 7 
 # ============================================================
 
 import math
@@ -267,12 +255,12 @@ def racines_naif(a, b, c):
     r = math.sqrt(delta)
     return (-b - r) / (2 * a), (-b + r) / (2 * a)
 
-# 7.2 La formule stable détaillée
+
+# 7.2
 def racines_stables(a, b, c):
     delta = b * b - 4 * a * c
     r = math.sqrt(delta)
     
-    # On choisit le bon calcul pour éviter de soustraire deux nombres très proches
     if b >= 0:
         sure = (-b - r) / (2 * a)
     else:
@@ -280,13 +268,13 @@ def racines_stables(a, b, c):
         
     autre = c / (a * sure)
     
-    # On renvoie la plus petite puis la plus grande
     if sure < autre:
         return sure, autre
     else:
         return autre, sure
 
-# 7.3 Addition exacte avec les Fractions
+
+# 7.3 
 total_exact = Fraction(0, 1)
 for i in range(1000):
     total_exact = total_exact + Fraction(1, 10)
@@ -295,9 +283,6 @@ print("Le résultat exact est :", total_exact)
 
 
 # correction
-
-import math
-
 def racines_naif(a, b, c):
     """Racines réelles de ax² + bx + c par la formule classique."""
     delta = b * b - 4 * a * c
@@ -316,7 +301,6 @@ def racines(a, b, c):
     if delta < 0:
         raise ValueError("pas de racine réelle")
     r = math.sqrt(delta)
-    # on choisit le signe qui additionne au lieu de soustraire
     if b >= 0:
         sure = (-b - r) / (2 * a)
     else:
