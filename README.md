@@ -1,50 +1,74 @@
 # Outils-fondamentaux
 
 **Auteur :** Charles Poichet  
-**Groupe :** C1  
+**Groupe :** C1
 
 ---
 
 ## Structure du dépôt
 
-* **`tp/`** : Contient l'ensemble de mes solutions réalisées lors des séances de travaux pratiques.
-* **`projet/`** : Contient le code source de mon projet personnel.
+Le dépôt est organisé en deux parties :
+
+- **`tp/`** : Regroupe mes solutions réalisées pendant les séances de TP.
+- **`projet/`** : Contient les fichiers de mon projet personnel.
+
 ---
 
 ## Présentation du projet
 
-Ce projet applique les concepts d'arithmétique modulaire à un cas d'usage concret avec la sécurisation des données de télémétrie en Formule 1. Il compare deux approches de chiffrement :
-1. **Le chiffrement RSA (asymétrique)** : Implémenté avec génération de nombres premiers, calcul du PGCD, recherche de l'inverse modulaire et exponentiation rapide.
-2. **Le masque jetable de Vernam (symétrique)** : Implémenté via des opérations binaires et la manipulation de fichiers texte.
+Pour ce projet, j'ai choisi de travailler sur la sécurisation des données de télémétrie en Formule 1.
 
-L'objectif est d'étudier le compromis entre la sécurité mathématique face à une attaque par factorisation et la vitesse d'exécution requise pour des données envoyées en temps réel.
+L'idée est de comparer deux méthodes de chiffrement :
 
-## Notions mathématiques mobilisées
+1. **RSA (chiffrement asymétrique)** : Cette méthode utilise une clé publique pour chiffrer et une clé privée pour déchiffrer. J'ai notamment travaillé sur la génération des nombres premiers, le PGCD et l'exponentiation modulaire.
+2. **Vernam (chiffrement symétrique)** : Cette méthode utilise une clé aléatoire et des opérations binaires pour chiffrer les données.
 
-* **Arithmétique et nombres premiers** : Génération de nombres premiers et recherche de diviseurs pour la création des clés publiques/privées.
-* **Calcul modulaire** : Implémentation de l'exponentiation modulaire rapide pour chiffrer et déchiffrer efficacement, et calcul de l'inverse modulaire.
-* **Complexité algorithmique** : Mesure du temps d'exécution (`time.perf_counter`) d'une attaque par force brute pour évaluer la résistance du RSA selon la taille de la clé.
-* **Calcul numérique et visualisation** : Génération d'un graphique d'évolution du temps de cassage en fonction de la taille en bits à l'aide de Matplotlib.
+Le but est de comparer ces deux méthodes, notamment leur vitesse et leur résistance face aux tentatives de cassage. Le contexte de la Formule 1 permet aussi de voir l'importance de la rapidité lorsque les données doivent être envoyées en temps réel.
 
-## Comment lancer le projet et ce qu'il faut observer
+## Notions mathématiques utilisées
 
-**Prérequis :** Python 3 et la bibliothèque `matplotlib`.
+Ce projet m'a permis de mettre en pratique plusieurs notions vues pendant le module :
 
-**Observations attendues :**
-   * La console affichera un comparatif entre le RSA et Vernam pour le chiffrement d'une donnée de télémétrie aléatoire, prouvant la supériorité de Vernam en termes de rapidité d'exécution.
-   * Le script lancera ensuite une attaque par factorisation sur des clés RSA de tailles croissantes (8, 9, 10, 11 bits).
-   * Un graphique sera généré, montrant l'explosion exponentielle du temps nécessaire pour casser une clé RSA à mesure que sa taille augmente.
+- **Nombres premiers** : Génération et recherche de nombres premiers pour créer les clés RSA.
+- **Arithmétique modulaire** : Utilisation de l'exponentiation rapide et recherche de l'inverse modulaire.
+- **Complexité algorithmique** : Mesure du temps nécessaire pour retrouver les facteurs d'une clé RSA avec une attaque par force brute.
+- **Calcul numérique et graphiques** : Utilisation de `time.perf_counter` pour mesurer les temps et de Matplotlib pour afficher les résultats sous forme de graphique.
 
-## Originalité, résultats et limites reconnues
+## Lancer le projet et résultats attendus
 
-**Interprétation des résultats :**
-Le code démontre expérimentalement que le chiffrement RSA est hautement vulnérable si le module $n$ est trop petit. Le graphique généré montre clairement la courbe exponentielle de la complexité de l'attaque par factorisation. Vernam, en revanche, offre une sécurité mathématique absolue (cassage infini) et une vitesse d'exécution supérieure.
+**Prérequis :**
+- Python 3
+- La bibliothèque `matplotlib`
 
-**Limites identifiées :**
-* *Recherche de l'inverse modulaire :* L'implémentation actuelle utilise une boucle naïve pour trouver la clé privée $d$. Pour des clés robustes (ex: 2048 bits), il est impératif de basculer sur l'algorithme d'Euclide étendu, sous peine d'un temps de génération infini.
-* *Test de primalité :* La recherche des diviseurs premiers teste actuellement les nombres jusqu'à $n$. Une optimisation mathématique stricte exigerait de s'arrêter à $\sqrt{n}$.
-* *Logistique F1 :* Si Vernam gagne sur le plan mathématique et temporel, son défaut logistique le rend impraticable en F1 : il nécessite l'échange préalable et sécurisé d'une clé aléatoire aussi longue que le flux continu de données généré par la monoplace.
+**Ce que fait le programme :**
 
-## Usage de l'Intelligence Artificielle
+- Il génère une donnée de télémétrie aléatoire et la chiffre avec RSA puis avec Vernam.
+- Il affiche les temps d'exécution pour comparer les deux méthodes.
+- Il lance ensuite une attaque par factorisation sur plusieurs petites clés RSA (8, 9, 10 et 11 bits).
+- Il génère un graphique pour montrer l'évolution du temps nécessaire pour retrouver les facteurs selon la taille de la clé.
 
-L'assistant Gemini a été utilisé dans ce projet comme outil de relecture et de conseil. Il a permis de structurer la comparaison des temps d'exécution, d'affiner l'usage de Matplotlib pour un rendu visuel propre, et de mettre en évidence les limites de mon implémentation naïve (notamment l'absence de l'Euclide étendu et l'optimisation $\sqrt{n}$ pour les nombres premiers). Les choix thématiques et la logique restent entièrement personnels.
+On peut ainsi observer que Vernam est plus rapide dans ce test. On remarque également que le cassage d'une clé RSA devient plus difficile lorsque sa taille augmente.
+
+## Résultats et limites du projet
+
+Les tests montrent que RSA est facilement cassable lorsque les clés utilisées sont trop petites. C'est notamment le cas des clés de quelques bits utilisées dans ce projet.
+
+Vernam présente un avantage intéressant : lorsqu'il est utilisé avec une clé parfaitement aléatoire, aussi longue que le message et jamais réutilisée, il offre une sécurité théorique absolue.
+
+Cependant, les deux méthodes ont aussi leurs limites.
+
+**Quelques limites de mon code :**
+
+- **Inverse modulaire :** J'utilise actuellement une boucle pour trouver l'inverse modulaire. Cette méthode fonctionne avec de petites valeurs, mais devient beaucoup trop lente avec de grandes clés. L'algorithme d'Euclide étendu serait plus adapté.
+- **Recherche des nombres premiers :** Mon programme teste actuellement les diviseurs jusqu'au nombre lui-même. Il serait possible d'améliorer cette recherche en s'arrêtant à sa racine carrée.
+- **Utilisation de Vernam en Formule 1 :** Même si cette méthode est rapide et très sûre, elle demande de partager une clé secrète aussi longue que les données à transmettre. Il faudrait donc pouvoir échanger et stocker ces clés de manière sécurisée, ce qui complique son utilisation en pratique.
+
+## Utilisation de l'intelligence artificielle
+
+J'ai utilisé Gemini comme aide pendant la réalisation du projet.
+
+Il m'a notamment aidé à améliorer la présentation des résultats, à utiliser Matplotlib et à repérer certaines limites dans mon code.
+
+Je me suis également servi de ses conseils pour réfléchir aux améliorations possibles, notamment pour le calcul de l'inverse modulaire et la recherche des nombres premiers.
+
+Le choix du sujet, les différentes parties du projet et le travail de programmation restent les miens.
