@@ -25,6 +25,8 @@ L'idée est de comparer deux méthodes de chiffrement :
 
 Le but est de comparer ces deux méthodes, notamment leur vitesse et leur résistance face aux tentatives de cassage. Le contexte de la Formule 1 permet aussi de voir l'importance de la rapidité lorsque les données doivent être envoyées en temps réel.
 
+Grâce à la spécialité NSI que j'ai suivie en Terminale, j'avais déjà quelques bases en programmation et sur ces deux algorithmes. J'ai donc pu reprendre ce travail et l'améliorer pour réaliser ce projet.
+
 ## Notions mathématiques utilisées
 
 Ce projet m'a permis de mettre en pratique plusieurs notions vues pendant le module :
