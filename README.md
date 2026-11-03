@@ -1,7 +1,7 @@
 # Outils-fondamentaux
 
 **Auteur :** Charles Poichet  
-**Groupe :** S1 C1  
+**Groupe :** C1  
 
 ---
 
