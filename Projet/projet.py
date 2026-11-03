@@ -3,7 +3,7 @@ import random
 import matplotlib.pyplot as plt
 
 # ============================================================
-# 1. FONCTIONS RSA (Mathématiques)
+# FONCTIONS RSA
 # ============================================================
 
 def est_premier(n):
@@ -58,7 +58,7 @@ def generer_premier(taille_bits):
             return nombre
 
 # ============================================================
-# 2. GENERATION DES CLES RSA ET CHIFFREMENT
+# GENERATION DES CLES RSA ET CHIFFREMENT
 # ============================================================
 
 def generer_cles(taille_bits):
@@ -81,7 +81,7 @@ def dechiffrer(chiffre, d, n):
     return exponentiation_rapide(chiffre, d, n)
 
 # ============================================================
-# 3. FONCTIONS VERNAM (Masque Jetable)
+# FONCTIONS VERNAM
 # ============================================================
 
 def generateur_cle():
@@ -133,7 +133,7 @@ def dechiffrement_vernam():
     return msg_dechiffre
 
 # ============================================================
-# 4. SIMULATIONS ET COMPARAISONS F1
+# SIMULATIONS ET COMPARAISONS F1
 # ============================================================
 
 def attaque_rsa(n, e):
